@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ahorro e Inversión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 0.95em;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .delete-btn {
+            background: #f5576c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background: #d9455a;
+            transform: scale(1.05);
+        }
+
+        .savings-list {
+            margin-top: 30px;
+        }
+
+        .savings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .savings-item-info {
+            flex: 1;
+        }
+
+        .savings-name {
+            color: #764ba2;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .savings-date {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .savings-amount {
+            color: #333;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .highlight {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .highlight-value {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .highlight-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .add-saving-form {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1.5fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .add-saving-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Mi Cuenta de Inversión</h1>
+        <p class="subtitle">Retorno anual: 11% | Interés compuesto mensual</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('register')">📝 Registrar Ahorro</button>
+            <button class="tab" onclick="switchTab('calculator')">📊 Calculadora</button>
+        </div>
+
+        <!-- TAB: Registrar Ahorro -->
+        <div id="register" class="tab-content active">
+            <div class="info-box">
+                <p><strong>Registra tus ahorros</strong> con nombre, fecha y monto. El sistema calculará automáticamente el interés compuesto del 11% anual desde la fecha de cada depósito hasta hoy.</p>
+            </div>
+
+            <div class="add-saving-form">
+                <div class="input-group">
+                    <label>Nombre / Quien ahorra</label>
+                    <input type="text" id="savingName" placeholder="Ej: María, Juan, Ahorro conjunto">
+                </div>
+                <div class="input-group">
+                    <label>Fecha del Ahorro</label>
+                    <input type="date" id="savingDate">
+                </div>
+                <div class="input-group">
+                    <label>Monto ($)</label>
+                    <input type="number" id="savingAmount" placeholder="500" min="0.01" step="0.01">
+                </div>
+                <button class="btn btn-small" onclick="addSaving()">+ Agregar</button>
+            </div>
+
+            <div class="savings-list" id="savingsList">
+                <div class="loading">Cargando datos...</div>
+            </div>
+
+            <div class="results">
+                <div class="result-item">
+                    <span class="result-label">Total Ahorrado:</span>
+                    <span class="result-value" id="totalSaved">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Intereses Generados:</span>
+                    <span class="result-value" id="totalInterestEarned">$0.00</span>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-value" id="currentBalance">$0.00</div>
+                    <div class="highlight-label">Balance Actual (con intereses)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Calculadora -->
+        <div id="calculator" class="tab-content">
+            <div class="info-box">
+                <p><strong>Proyecta tu ahorro futuro</strong> con aportes mensuales regulares y ve cuánto puedes acumular.</p>
+            </div>
+
+            <div class="input-group">
+                <label>Capital Inicial ($)</label>
+                <input type="number" id="initialAmount" placeholder="0" value="0" min="0">
+            </div>
+
+            <div class="input-group">
+                <label>Aporte Mensual ($)</label>
+                <input type="number" id="monthlyContribution" placeholder="500" value="500" min="0">
+            </div>
+
+            <div class="input-group">
+                <label>Período de Tiempo</label>
+                <select id="timePeriod">
+                    <option value="1">1 año</option>
+                    <option value="2">2 años</option>
+                    <option value="3">3 años</option>
+                    <option value="5" selected>5 años</option>
+                    <option value="10">10 años</option>
+                    <option value="15">15 años</option>
+                    <option value="20">20 años</option>
+                    <option value="25">25 años</option>
+                    <option value="30">30 años</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="calculateProjection()">Calcular Proyección</button>
+
+            <div class="results" id="projectionResults" style="display: none;">
+                <div class="result-item">
+                    <span class="result-label">Total Aportado:</span>
+                    <span class="result-value" id="totalContributed">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Intereses Ganados:</span>
+                    <span class="result-value" id="projectedInterest">$0</span>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-value" id="finalAmount">$0</div>
+                    <div class="highlight-label">Monto Final Proyectado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // IMPORTANTE: Reemplaza con tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY_AQUI",
+            authDomain: "TU_AUTH_DOMAIN_AQUI",
+            databaseURL: "TU_DATABASE_URL_AQUI",
+            projectId: "TU_PROJECT_ID_AQUI",
+            storageBucket: "TU_STORAGE_BUCKET_AQUI",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID_AQUI",
+            appId: "TU_APP_ID_AQUI"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const savingsRef = ref(database, 'savings');
+
+        let savings = [];
+
+        window.switchTab = function(tabName) {
+            const clickedTab = event.target;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            clickedTab.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('savingDate').value = today;
+        }
+
+        window.addSaving = async function() {
+            const name = document.getElementById('savingName').value.trim();
+            const date = document.getElementById('savingDate').value;
+            const amount = parseFloat(document.getElementById('savingAmount').value);
+
+            if (!name) {
+                alert('Por favor ingresa el nombre de quien ahorra');
+                return;
+            }
+
+            if (!date || !amount || amount <= 0) {
+                alert('Por favor ingresa una fecha y monto válidos');
+                return;
+            }
+
+            const saving = {
+                id: Date.now(),
+                name: name,
+                date: date,
+                amount: amount
+            };
+
+            savings.push(saving);
+            savings.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            await saveSavings();
+
+            document.getElementById('savingName').value = '';
+            document.getElementById('savingAmount').value = '';
+        }
+
+        async function deleteSaving(id) {
+            if (confirm('¿Estás seguro de eliminar este ahorro?')) {
+                savings = savings.filter(s => s.id !== id);
+                await saveSavings();
+            }
+        }
+
+        function renderSavings() {
+            const list = document.getElementById('savingsList');
+            
+            if (savings.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>📋 No hay ahorros registrados aún</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Agrega tu primer ahorro arriba</p>
+                    </div>
+                `;
+                calculateCurrentBalance();
+                return;
+            }
+
+            list.innerHTML = '';
+            
+            savings.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'savings-item';
+                div.innerHTML = `
+                    <div class="savings-item-info">
+                        <div class="savings-name">${escapeHtml(s.name)}</div>
+                        <div class="savings-date">${formatDate(s.date)}</div>
+                        <div class="savings-amount">$${s.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    </div>
+                `;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Eliminar';
+                deleteBtn.addEventListener('click', () => deleteSaving(s.id));
+                
+                div.appendChild(deleteBtn);
+                list.appendChild(div);
+            });
+
+            calculateCurrentBalance();
+        }
+
+        function calculateCurrentBalance() {
+            if (savings.length === 0) {
+                document.getElementById('totalSaved').textContent = '$0.00';
+                document.getElementById('totalInterestEarned').textContent = '$0.00';
+                document.getElementById('currentBalance').textContent = '$0.00';
+                return;
+            }
+
+            const today = new Date();
+            const annualRate = 0.11;
+            const dailyRate = Math.pow(1 + annualRate, 1/365) - 1;
+
+            let totalSaved = 0;
+            let currentBalance = 0;
+
+            savings.forEach(saving => {
+                totalSaved += saving.amount;
+                const savingDate = new Date(saving.date + 'T00:00:00');
+                const daysPassed = Math.floor((today - savingDate) / (1000 * 60 * 60 * 24));
+                const valueWithInterest = saving.amount * Math.pow(1 + dailyRate, daysPassed);
+                currentBalance += valueWithInterest;
+            });
+
+            const totalInterest = currentBalance - totalSaved;
+
+            document.getElementById('totalSaved').textContent = 
+                '$' + totalSaved.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            document.getElementById('totalInterestEarned').textContent = 
+                '$' + totalInterest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            document.getElementById('currentBalance').textContent = 
+                '$' + currentBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        window.calculateProjection = function() {
+            const initialAmount = parseFloat(document.getElementById('initialAmount').value) || 0;
+            const monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value) || 0;
+            const years = parseInt(document.getElementById('timePeriod').value);
+            
+            const annualRate = 0.11;
+            const monthlyRate = annualRate / 12;
+            const months = years * 12;
+            
+            let balance = initialAmount;
+            
+            for (let i = 0; i < months; i++) {
+                balance = balance * (1 + monthlyRate) + monthlyContribution;
+            }
+            
+            const totalContributed = initialAmount + (monthlyContribution * months);
+            const totalInterest = balance - totalContributed;
+            
+            document.getElementById('totalContributed').textContent = 
+                '$' + totalContributed.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            document.getElementById('projectedInterest').textContent = 
+                '$' + totalInterest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            document.getElementById('finalAmount').textContent = 
+                '$' + balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            document.getElementById('projectionResults').style.display = 'block';
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function saveSavings() {
+            try {
+                await set(savingsRef, savings);
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert('Error al guardar los datos. Verifica tu conexión.');
+            }
+        }
+
+        // Escuchar cambios en tiempo real
+        onValue(savingsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                savings = data;
+                savings.sort((a, b) => new Date(a.date) - new Date(b.date));
+            } else {
+                savings = [];
+            }
+            renderSavings();
+        });
+
+        setDefaultDate();
+    </script>
+</body>
+</html>
